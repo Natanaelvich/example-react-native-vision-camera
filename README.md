@@ -14,10 +14,16 @@
 
 A example implementation react native vision camera with styled components and typescript.
 
+## 🖼 ScreenShots
+
+<p align='center'>
+
+</p>
+
 ## 🖼 GIFs
 
 <p align='center'>
-<img src='https://user-images.githubusercontent.com/52014318/150053239-11bc429a-ca7a-456c-9bf0-5c59b57e7c5f.gif' />
+
 </p>
 
 ## ✨ Technologies
