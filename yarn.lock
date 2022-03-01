@@ -5523,10 +5523,10 @@ react-native-screens@^3.4.0:
     react-native-gradle-plugin "^0.0.3"
     warn-once "^0.1.0"
 
-react-native-vision-camera@^2.12.0:
-  version "2.12.0"
-  resolved "https://registry.yarnpkg.com/react-native-vision-camera/-/react-native-vision-camera-2.12.0.tgz#e174798e04676c57ec2633222a954156fd77e48c"
-  integrity sha512-sc6h1OS8Xei/w6roeHix7bcJC6ml8fW+w1slWxQDYYsch1tb65xflMVQ71SNjyE9FN3KyrojLEqZqgN4iDzL9g==
+react-native-vision-camera@^2.12.1:
+  version "2.12.1"
+  resolved "https://registry.yarnpkg.com/react-native-vision-camera/-/react-native-vision-camera-2.12.1.tgz#433c31f0d01799e6991e07e8c9807d8bcff38ced"
+  integrity sha512-ZqSlXJkvvgQB2Ht7ZsRNOOuEruqK6jDtN+ybwcPmoFSq9hX4QZJz3+KJbmZP4VDTSb7O0v5sXSyUn8NEnfbekA==
 
 react-native@0.67.2:
   version "0.67.2"
