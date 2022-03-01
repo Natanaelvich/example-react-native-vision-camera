@@ -1,7 +1,8 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {StyleSheet, Alert} from 'react-native';
 import {
   Camera as CameraVision,
+  CameraPermissionRequestResult,
   useCameraDevices,
 } from 'react-native-vision-camera';
 
@@ -12,6 +13,8 @@ function Camera() {
 
   const [torchActive, setTorchActive] = useState(false);
   const [frontCamera, setFrontCamera] = useState(false);
+  const [permissionResult, setPermissionResult] =
+    useState<CameraPermissionRequestResult>('denied');
 
   /* Here we use hook provided by library to take available devices (lenses) */
   const availableDevices = useCameraDevices();
@@ -35,10 +38,31 @@ function Camera() {
   const flipCamera = () => setFrontCamera(prevState => !prevState);
   const toggleTorch = () => setTorchActive(prevState => !prevState);
 
+  useEffect(() => {
+    async function getPermission() {
+      try {
+        const cameraPermission = await CameraVision.requestCameraPermission();
+
+        setPermissionResult(cameraPermission);
+      } catch (error) {
+        Alert.alert(
+          'permissão da câmera',
+          'Não foi possível recuperar permissão da câmera.',
+        );
+      }
+    }
+
+    getPermission();
+  }, []);
+
   /* There is an additional check to prevent errors.
      Camera component needs a valid device prop,
      we need to stop rendering if the device is falsy value. */
   if (!currentDevice) {
+    return null;
+  }
+
+  if (permissionResult === 'denied') {
     return null;
   }
 
