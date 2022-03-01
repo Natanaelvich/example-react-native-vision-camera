@@ -1,12 +1,23 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {StyleSheet, Alert} from 'react-native';
+import Animated, {
+  useAnimatedProps,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 import {
   Camera as CameraVision,
   CameraPermissionRequestResult,
+  CameraProps,
   useCameraDevices,
 } from 'react-native-vision-camera';
 
 import * as S from './styles';
+
+const ReanimatedCamera = Animated.createAnimatedComponent(CameraVision);
+Animated.addWhitelistedNativeProps({
+  zoom: true,
+});
 
 function Camera() {
   const camera = useRef<CameraVision>(null);
@@ -26,6 +37,8 @@ function Camera() {
       ? availableDevices.front
       : availableDevices?.back;
 
+  const zoom = useSharedValue(0);
+
   const takePhoto = async () => {
     try {
       const result = await camera.current?.takePhoto();
@@ -35,12 +48,25 @@ function Camera() {
     }
   };
 
+  const handleFocusOnTap = async () => {
+    try {
+      await camera.current?.focus({x: 12, y: 12});
+    } catch (e) {
+      Alert.alert(`Error: ${e}`);
+    }
+  };
+
+  const onRandomZoomPress = useCallback(() => {
+    zoom.value = withSpring(Math.random());
+  }, [zoom]);
+
   const flipCamera = () => setFrontCamera(prevState => !prevState);
   const toggleTorch = () => setTorchActive(prevState => !prevState);
 
   useEffect(() => {
     async function getPermission() {
       try {
+        console.log(await currentDevice?.supportsFocus());
         const cameraPermission = await CameraVision.requestCameraPermission();
 
         setPermissionResult(cameraPermission);
@@ -55,6 +81,18 @@ function Camera() {
     getPermission();
   }, []);
 
+  useEffect(() => {
+    console.log(currentDevice?.supportsFocus);
+    console.log(currentDevice?.maxZoom);
+    console.log(currentDevice?.minZoom);
+    console.log(currentDevice?.isMultiCam);
+  }, [currentDevice]);
+
+  const animatedProps = useAnimatedProps<Partial<CameraProps>>(
+    () => ({zoom: zoom.value}),
+    [zoom],
+  );
+
   /* There is an additional check to prevent errors.
      Camera component needs a valid device prop,
      we need to stop rendering if the device is falsy value. */
@@ -68,18 +106,20 @@ function Camera() {
 
   return (
     <S.Container>
-      <CameraVision
+      <ReanimatedCamera
         ref={camera}
         style={StyleSheet.absoluteFill}
         device={currentDevice}
         isActive={true}
         photo={true}
         torch={torchActive ? 'on' : 'off'}
+        enableZoomGesture
+        animatedProps={animatedProps}
       />
 
       <S.Buttons>
         <S.Button onPress={toggleTorch} />
-        <S.Button onPress={takePhoto} />
+        <S.Button onPress={handleFocusOnTap} />
         <S.Button onPress={flipCamera} />
       </S.Buttons>
     </S.Container>
