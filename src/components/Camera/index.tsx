@@ -9,8 +9,10 @@ import {
   Camera as CameraVision,
   CameraPermissionRequestResult,
   CameraProps,
+  PhotoFile,
   useCameraDevices,
 } from 'react-native-vision-camera';
+import PhotoPreview from '../PhotoPreview';
 
 import * as S from './styles';
 
@@ -26,6 +28,7 @@ function Camera() {
   const [frontCamera, setFrontCamera] = useState(false);
   const [permissionResult, setPermissionResult] =
     useState<CameraPermissionRequestResult>('denied');
+  const [photos, setPhotos] = useState<PhotoFile[]>([]);
 
   /* Here we use hook provided by library to take available devices (lenses) */
   const availableDevices = useCameraDevices();
@@ -41,8 +44,15 @@ function Camera() {
 
   const takePhoto = async () => {
     try {
-      const result = await camera.current?.takePhoto();
-      console.log(result);
+      const result = await camera.current?.takePhoto({
+        skipMetadata: true,
+        flash: 'off',
+        qualityPrioritization: 'speed',
+      });
+
+      if (result) {
+        setPhotos(prevPhotos => [...prevPhotos, result]);
+      }
     } catch (e) {
       Alert.alert(`Error: ${e}`);
     }
@@ -66,7 +76,6 @@ function Camera() {
   useEffect(() => {
     async function getPermission() {
       try {
-        console.log(await currentDevice?.supportsFocus());
         const cameraPermission = await CameraVision.requestCameraPermission();
 
         setPermissionResult(cameraPermission);
@@ -118,8 +127,10 @@ function Camera() {
       />
 
       <S.Buttons>
-        <S.Button onPress={toggleTorch} />
-        <S.Button onPress={handleFocusOnTap} />
+        <S.Button>
+          <PhotoPreview photo={`file://${photos[0]?.path}`} />
+        </S.Button>
+        <S.Button onPress={takePhoto} />
         <S.Button onPress={flipCamera} />
       </S.Buttons>
     </S.Container>

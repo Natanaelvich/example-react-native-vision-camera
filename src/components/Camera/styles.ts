@@ -24,4 +24,10 @@ export const Button = styled.TouchableOpacity`
 
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+`;
+
+export const Photo = styled.Image`
+  height: 100%;
+  width: 100%;
 `;
