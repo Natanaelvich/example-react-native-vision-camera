@@ -12,6 +12,8 @@ import {
   PhotoFile,
   useCameraDevices,
 } from 'react-native-vision-camera';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+
 import PhotoPreview from '../PhotoPreview';
 
 import * as S from './styles';
@@ -128,10 +130,22 @@ function Camera() {
 
       <S.Buttons>
         <S.Button>
-          <PhotoPreview photo={`file://${photos[0]?.path}`} />
+          {photos.length > 0 ? (
+            <PhotoPreview photo={`file://${photos[0].path}`} />
+          ) : (
+            <MaterialIcons name="image-not-supported" size={24} color="black" />
+          )}
         </S.Button>
-        <S.Button onPress={takePhoto} />
-        <S.Button onPress={flipCamera} />
+        <S.Button onPress={takePhoto}>
+          <MaterialIcons name="camera-alt" size={24} color="black" />
+        </S.Button>
+        <S.Button onPress={flipCamera}>
+          {frontCamera ? (
+            <MaterialIcons name="camera-rear" size={24} color="black" />
+          ) : (
+            <MaterialIcons name="camera-front" size={24} color="black" />
+          )}
+        </S.Button>
       </S.Buttons>
     </S.Container>
   );
