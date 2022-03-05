@@ -15,7 +15,7 @@
   "dependencies": {
     "react": "17.0.2",
     "react-native": "0.67.2",
-    "react-native-gesture-handler": "^2.3.0",
+    "react-native-gesture-handler": "2.1.1",
     "react-native-image-viewing": "^0.2.1",
     "react-native-reanimated": "^2.3.1",
     "react-native-vector-icons": "^9.1.0",
