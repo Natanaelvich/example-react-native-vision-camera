@@ -1,12 +1,11 @@
+import {RectButton} from 'react-native-gesture-handler';
 import styled from 'styled-components/native';
 
 export const Container = styled.View`
   flex: 1;
-  position: relative;
 `;
 
 export const Buttons = styled.View`
-  position: absolute;
   flex-direction: row;
   justify-content: space-between;
 
@@ -14,9 +13,10 @@ export const Buttons = styled.View`
   left: 0;
   bottom: 0;
   padding: 24px;
+  background: black;
 `;
 
-export const Button = styled.TouchableOpacity`
+export const Button = styled(RectButton)`
   width: 60px;
   height: 60px;
   border-radius: 30px;
@@ -24,6 +24,13 @@ export const Button = styled.TouchableOpacity`
 
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+`;
+
+export const WrapperImage = styled.View`
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
   overflow: hidden;
 `;
 
