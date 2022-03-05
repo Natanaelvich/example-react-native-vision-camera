@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {StyleSheet, Alert} from 'react-native';
+import {StyleSheet, Alert, View} from 'react-native';
 import Animated, {
   useAnimatedProps,
   useSharedValue,
@@ -17,6 +17,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import PhotoPreview from '../PhotoPreview';
 
 import * as S from './styles';
+import ImageViewer from '../ImageViewer';
 
 const ReanimatedCamera = Animated.createAnimatedComponent(CameraVision);
 Animated.addWhitelistedNativeProps({
@@ -31,6 +32,7 @@ function Camera() {
   const [permissionResult, setPermissionResult] =
     useState<CameraPermissionRequestResult>('denied');
   const [photos, setPhotos] = useState<PhotoFile[]>([]);
+  const [showImageViewer, setShowImageViewer] = useState(false);
 
   /* Here we use hook provided by library to take available devices (lenses) */
   const availableDevices = useCameraDevices();
@@ -46,11 +48,7 @@ function Camera() {
 
   const takePhoto = async () => {
     try {
-      const result = await camera.current?.takePhoto({
-        skipMetadata: true,
-        flash: 'off',
-        qualityPrioritization: 'speed',
-      });
+      const result = await camera.current?.takePhoto();
 
       if (result) {
         setPhotos(prevPhotos => [...prevPhotos, result]);
@@ -74,6 +72,11 @@ function Camera() {
 
   const flipCamera = () => setFrontCamera(prevState => !prevState);
   const toggleTorch = () => setTorchActive(prevState => !prevState);
+  const handleOpenImageViewer = () => {
+    if (photos.length > 0) {
+      setShowImageViewer(true);
+    }
+  };
 
   useEffect(() => {
     async function getPermission() {
@@ -119,7 +122,8 @@ function Camera() {
     <S.Container>
       <ReanimatedCamera
         ref={camera}
-        style={StyleSheet.absoluteFill}
+        // style={StyleSheet.absoluteFill}
+        style={{flex: 1}}
         device={currentDevice}
         isActive={true}
         photo={true}
@@ -129,9 +133,13 @@ function Camera() {
       />
 
       <S.Buttons>
-        <S.Button>
+        <S.Button onPress={handleOpenImageViewer}>
           {photos.length > 0 ? (
-            <PhotoPreview photo={`file://${photos[0].path}`} />
+            <S.WrapperImage>
+              <PhotoPreview
+                photo={`file://${photos[photos.length - 1].path}`}
+              />
+            </S.WrapperImage>
           ) : (
             <MaterialIcons name="image-not-supported" size={24} color="black" />
           )}
@@ -147,6 +155,13 @@ function Camera() {
           )}
         </S.Button>
       </S.Buttons>
+
+      <ImageViewer
+        images={photos.map(p => ({uri: `file://${p.path}`}))}
+        isVisible={showImageViewer}
+        handleClose={() => setShowImageViewer(false)}
+        imageIndex={photos.length - 1}
+      />
     </S.Container>
   );
 }
