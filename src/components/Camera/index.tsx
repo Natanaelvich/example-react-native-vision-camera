@@ -23,6 +23,7 @@ import {
   TapGestureHandler,
   TapGestureHandlerEventPayload,
 } from 'react-native-gesture-handler';
+import CircleFocus from '../CircleFocus';
 
 const ReanimatedCamera = Animated.createAnimatedComponent(CameraVision);
 Animated.addWhitelistedNativeProps({
@@ -38,7 +39,7 @@ function Camera() {
     useState<CameraPermissionRequestResult>('denied');
   const [photos, setPhotos] = useState<PhotoFile[]>([]);
   const [showImageViewer, setShowImageViewer] = useState(false);
-
+  const [focusCoords, setFocusCoords] = useState({x: 0, y: 0});
   /* Here we use hook provided by library to take available devices (lenses) */
   const availableDevices = useCameraDevices();
 
@@ -100,6 +101,11 @@ function Camera() {
   const gestureTapToFocus = (
     event: HandlerStateChangeEvent<TapGestureHandlerEventPayload>,
   ) => {
+    setFocusCoords({
+      x: event.nativeEvent.x,
+      y: event.nativeEvent.y,
+    });
+
     camera.current?.focus({
       x: Math.floor(event.nativeEvent.x),
       y: Math.floor(event.nativeEvent.y),
@@ -156,6 +162,8 @@ function Camera() {
           )}
         </S.Button>
       </S.Buttons>
+
+      <CircleFocus x={focusCoords.x} y={focusCoords.y} />
 
       <ImageViewer
         images={photos.map(p => ({uri: `file://${p.path}`}))}
