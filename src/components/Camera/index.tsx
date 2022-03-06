@@ -18,6 +18,11 @@ import PhotoPreview from '../PhotoPreview';
 
 import * as S from './styles';
 import ImageViewer from '../ImageViewer';
+import {
+  HandlerStateChangeEvent,
+  TapGestureHandler,
+  TapGestureHandlerEventPayload,
+} from 'react-native-gesture-handler';
 
 const ReanimatedCamera = Animated.createAnimatedComponent(CameraVision);
 Animated.addWhitelistedNativeProps({
@@ -58,14 +63,6 @@ function Camera() {
     }
   };
 
-  const handleFocusOnTap = async () => {
-    try {
-      await camera.current?.focus({x: 12, y: 12});
-    } catch (e) {
-      Alert.alert(`Error: ${e}`);
-    }
-  };
-
   const onRandomZoomPress = useCallback(() => {
     zoom.value = withSpring(Math.random());
   }, [zoom]);
@@ -95,17 +92,19 @@ function Camera() {
     getPermission();
   }, []);
 
-  useEffect(() => {
-    console.log(currentDevice?.supportsFocus);
-    console.log(currentDevice?.maxZoom);
-    console.log(currentDevice?.minZoom);
-    console.log(currentDevice?.isMultiCam);
-  }, [currentDevice]);
-
   const animatedProps = useAnimatedProps<Partial<CameraProps>>(
     () => ({zoom: zoom.value}),
     [zoom],
   );
+
+  const gestureTapToFocus = (
+    event: HandlerStateChangeEvent<TapGestureHandlerEventPayload>,
+  ) => {
+    camera.current?.focus({
+      x: Math.floor(event.nativeEvent.x),
+      y: Math.floor(event.nativeEvent.y),
+    });
+  };
 
   /* There is an additional check to prevent errors.
      Camera component needs a valid device prop,
@@ -120,17 +119,19 @@ function Camera() {
 
   return (
     <S.Container>
-      <ReanimatedCamera
-        ref={camera}
-        // style={StyleSheet.absoluteFill}
-        style={{flex: 1}}
-        device={currentDevice}
-        isActive={true}
-        photo={true}
-        torch={torchActive ? 'on' : 'off'}
-        enableZoomGesture
-        animatedProps={animatedProps}
-      />
+      <TapGestureHandler onHandlerStateChange={gestureTapToFocus}>
+        <ReanimatedCamera
+          ref={camera}
+          // style={StyleSheet.absoluteFill}
+          style={{flex: 1}}
+          device={currentDevice}
+          isActive={true}
+          photo={true}
+          torch={torchActive ? 'on' : 'off'}
+          enableZoomGesture
+          animatedProps={animatedProps}
+        />
+      </TapGestureHandler>
 
       <S.Buttons>
         <S.Button onPress={handleOpenImageViewer}>
