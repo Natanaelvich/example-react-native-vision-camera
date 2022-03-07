@@ -1,9 +1,8 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {StyleSheet, Alert, View} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {Alert} from 'react-native';
 import Animated, {
   useAnimatedProps,
   useSharedValue,
-  withSpring,
 } from 'react-native-reanimated';
 import {
   Camera as CameraVision,
@@ -63,10 +62,6 @@ function Camera() {
       Alert.alert(`Error: ${e}`);
     }
   };
-
-  const onRandomZoomPress = useCallback(() => {
-    zoom.value = withSpring(Math.random());
-  }, [zoom]);
 
   const flipCamera = () => setFrontCamera(prevState => !prevState);
   const toggleTorch = () => setTorchActive(prevState => !prevState);
@@ -162,6 +157,16 @@ function Camera() {
           )}
         </S.Button>
       </S.Buttons>
+
+      <S.ButtonsFloatings>
+        <S.ButtonFloating onPress={toggleTorch}>
+          {torchActive ? (
+            <MaterialIcons name="flash-on" size={24} color="black" />
+          ) : (
+            <MaterialIcons name="flash-off" size={24} color="black" />
+          )}
+        </S.ButtonFloating>
+      </S.ButtonsFloatings>
 
       <CircleFocus x={focusCoords.x} y={focusCoords.y} />
 

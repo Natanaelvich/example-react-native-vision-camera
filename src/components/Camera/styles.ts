@@ -38,3 +38,18 @@ export const Photo = styled.Image`
   height: 100%;
   width: 100%;
 `;
+
+export const ButtonsFloatings = styled.View`
+  position: absolute;
+  right: 16px;
+`;
+
+export const ButtonFloating = styled(RectButton)`
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.5);
+  margin-top: 16px;
+  align-items: center;
+  justify-content: center;
+`;
